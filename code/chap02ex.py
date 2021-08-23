@@ -11,6 +11,7 @@ import sys
 from operator import itemgetter
 
 import first
+from numpy import append
 import thinkstats2
 
 
@@ -21,7 +22,17 @@ def Mode(hist):
 
     returns: value from Hist
     """
-    return 0
+    if len(hist) == 0:
+        return 0
+    
+    m = hist[0]
+    mfreq = hist.Freq(m)
+    for x in hist:
+        freq = hist.Freq(x)
+        if freq > mfreq:
+            mfreq = freq
+            m = x
+    return m
 
 
 def AllModes(hist):
@@ -31,7 +42,12 @@ def AllModes(hist):
 
     returns: iterator of value-freq pairs
     """
-    return []
+    modes = []
+    for x in hist:
+        freq = hist.Freq(x)
+        modes.append((x, freq))
+    modes = sorted(modes, key=lambda x: x[1], reverse=True)
+    return modes
 
 
 def main(script):
@@ -55,6 +71,12 @@ def main(script):
         print(value, freq)
 
     print('%s: All tests passed.' % script)
+
+    firstwgtmn, otherwgtmn = firsts.totalwgt_lb.mean(), others.totalwgt_lb.mean()
+    print(f'firsts mean: {firstwgtmn}, others mean: {otherwgtmn}')
+
+    d = thinkstats2.CohenEffectSize(firsts.totalwgt_lb, others.totalwgt_lb)
+    print(f'cohen effect size: {d}')
 
 
 if __name__ == '__main__':
